@@ -35,9 +35,10 @@ public class Funcionario {
 		super();
 	}
 	
-	public Funcionario(String nome, String cpf) 
+	public Funcionario(long id, String nome, String cpf) 
 	{
 		super();
+		this.id = id;
 		this.nome = nome;
 		this.cpf = cpf;
 	}

@@ -32,6 +32,9 @@ public class opcoesController {
 	@Autowired
 	private opcoesRepository opcoesRep;
 	
+	@Autowired
+	private funcionarioRepository funcionario;
+	
 	
 	@GetMapping
 	public ResponseEntity<List<Opcoes>> GetAll() {
@@ -49,16 +52,19 @@ public class opcoesController {
 	
 	@PostMapping("/cadastrar")
 	public ResponseEntity<Opcoes> post(@Valid @RequestBody Opcoes opcoes){
-		return ResponseEntity.status(HttpStatus.CREATED)
-				.body(opcoesRep.save(opcoes));
+		if (funcionario.existsById(opcoes.getFuncionario().getId()))
+			return ResponseEntity.status(HttpStatus.CREATED).body(opcoesRep.save(opcoes));
+	     return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
 	}
 	
 	@PutMapping("/atualizar")
 	public ResponseEntity<Opcoes> put(@RequestBody Opcoes opcoes){
-		return opcoesRep.findById(opcoes.getId())
-				.map(resposta -> ResponseEntity.status(HttpStatus.OK)
-					.body(opcoesRep.save(opcoes)))
-				.orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+		if (opcoesRep.existsById(opcoes.getId())){
+			if (funcionario.existsById(opcoes.getFuncionario().getId()))
+			return ResponseEntity.status(HttpStatus.OK).body(opcoesRep.save(opcoes));
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).build();
+		}			
+		return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 	}
 	
 	@ResponseStatus(HttpStatus.NO_CONTENT)
